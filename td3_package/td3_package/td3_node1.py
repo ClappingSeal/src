@@ -57,7 +57,7 @@ class TD3Node1(Node):
         next_position = td3(self.start, goal, obstacles)
 
         print(next_position)
-        response.path = next_position.tolist()
+        response.path = next_position
         return response
 
 
