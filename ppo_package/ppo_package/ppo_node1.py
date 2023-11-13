@@ -4,9 +4,9 @@ from std_msgs.msg import Float64MultiArray
 from msgs.srv import PPO
 import numpy as np
 import math
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO as PPO_model
 
-model = PPO.load("PPO")
+model = PPO_model.load("PPO")
 
 
 def ppo(start, goal, obstacles, velocity=3):
