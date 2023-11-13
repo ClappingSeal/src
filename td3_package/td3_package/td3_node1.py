@@ -21,7 +21,7 @@ def td3(start, goal, obstacles, velocity=3):
     observation = np.array(observation) * 0.04530495
     action, _ = model.predict(observation)
 
-    return action_array * velocity
+    return action * velocity
 
 
 class TD3Node1(Node):
