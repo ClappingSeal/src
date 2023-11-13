@@ -58,8 +58,6 @@ class TD3Node1(Node):
 
         print(next_position)
         response.path = next_position.tolist()
-        
-        response.path = list(np.array(next_position).flatten())
         return response
 
 
