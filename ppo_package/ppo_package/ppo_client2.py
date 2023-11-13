@@ -38,7 +38,7 @@ class PPOClientNode(Node):
             goto_request = GOTO.Request()
             goto_request.x = float(path[0])
             goto_request.y = float(path[1])
-            goto_request.z = float(3) # 높이 세팅 값
+            goto_request.z = float(5) # 높이 세팅 값
             future_goto = self.cli_goto.call_async(goto_request)
             rclpy.spin_until_future_complete(self, future_goto)
 
