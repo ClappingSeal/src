@@ -6,7 +6,7 @@ import numpy as np
 import math
 from stable_baselines3 import PPO
 
-model = PPO.load("PPO.zip")
+model = PPO.load("PPO")
 
 
 def ppo(start, goal, obstacles, velocity=3):
