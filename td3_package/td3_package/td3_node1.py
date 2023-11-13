@@ -13,8 +13,8 @@ def td3(start, goal, obstacles, velocity=3):
     start = np.array(start)
     goal = np.array(goal) - start
     obstacle0 = obstacles[0] - start
-    obstacle1 = obstacles[1] - start
-    obstacle2 = obstacles[2] - start
+    obstacle1 = obstacles[0] - start
+    obstacle2 = obstacles[0] - start
 
     observation = np.concatenate((goal, obstacle0, obstacle1, obstacle2, [0, 0], [0, 0], [0, 0]), axis=0)
 
