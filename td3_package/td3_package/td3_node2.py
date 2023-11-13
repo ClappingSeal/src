@@ -4,9 +4,9 @@ from std_msgs.msg import Float64MultiArray
 from msgs.srv import TD3
 import numpy as np
 import math
-from stable_baselines3 import TD3
+from stable_baselines3 import TD3 as TD3_model
 
-model = TD3.load("TD3")
+model = TD3_model.load("TD3")
 
 
 def td3(start, goal, obstacles, velocity=3):
