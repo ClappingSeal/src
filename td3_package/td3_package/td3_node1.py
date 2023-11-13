@@ -55,7 +55,7 @@ class TD3Node1(Node):
             return response
         goal = np.array([request.goal[0], request.goal[1]])
 
-        
+        next_position = td3(self.start, goal, obstacles)
         response.path = []
         for value in next_position:
             response.path.append(float(value))
