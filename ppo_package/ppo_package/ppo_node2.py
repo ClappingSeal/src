@@ -70,7 +70,9 @@ class PPONode2(Node):
             return response
         goal = np.array([request.goal[0], request.goal[1]])
         next_position = ppo(self.start, goal, obstacles)
-        response.path = list(np.array(next_position).flatten())
+        response.path = []
+        for value in next_position:
+            response.path.append(float(value))
         return response
 
 
