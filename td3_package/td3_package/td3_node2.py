@@ -18,10 +18,10 @@ def td3(start, goal, obstacles, velocity=3):
 
     observation = np.concatenate((goal, obstacle0, obstacle1, obstacle2, [0, 0], [0, 0], [0, 0]), axis=0)
 
-    observation = np.array(observation) * 0.04530495
+    observation = np.array(observation) * 0.01
     action, _ = model.predict(observation)
-    
-    return action * velocity
+
+    return start + action * velocity
 
 
 class TD3Node2(Node):
