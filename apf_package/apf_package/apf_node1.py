@@ -40,34 +40,15 @@ class APFNode1(Node):
             self.get_logger().info(f'Obstacle: {self.current_positions[n]} for drone {n}')
 
     def apf_callback(self, request, response):
-        obstacles = []
-
-        # LSTM 사용
-        new_data = np.array([
-            self.recent_positions[self.drone_id][0],
-            self.recent_positions[self.drone_id][1],
-            self.recent_positions[self.drone_id][2],
-            [None, None]
-        ])
-        predicted_position = LSTM_prediction(new_data)
-
-        # 예측된 위치를 obstacles에 추가
-        if predicted_position is not None:
-            obstacles.append(predicted_position)
-
-        # 가장 최근 위치 추가
-        if len(self.recent_positions[self.drone_id]) >= 1:
-            obstacles.append(self.recent_positions[self.drone_id][-1])
-
+        obstacles = list(self.current_positions.values())
+        # obstacles.append([3, 5])
         if self.start is None:
             self.get_logger().warn('Waiting for drone start position...')
             return response
-
         goal = np.array([request.goal[0], request.goal[1]])
         next_position = apf(self.start, goal, obstacles)
         response.path = list(np.array(next_position).flatten())
         return response
-
 
 def main(args=None):
     rclpy.init(args=args)
