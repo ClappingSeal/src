@@ -41,8 +41,6 @@ def ppo(start, goal, obstacles, velocity=3):
     observation = np.array(observation)
     action, _ = model.predict(observation)
 
-    print(obstacle0)
-
     return start + change_action(action) * velocity
 
 
