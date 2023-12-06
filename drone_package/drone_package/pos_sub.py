@@ -56,9 +56,9 @@ class PosSubscriber(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    Pos_node = PosSubscriber()
+    pos_node = PosSubscriber()
     try:
-        rclpy.spin(Pos_node)
+        rclpy.spin(pos_node)
     except KeyboardInterrupt:
         keys = ['Time', 'x1', 'y1', 'z1', 'x2', 'y2', 'z2'] # 드론 추가시 여기다 정보 추가 !!!!!!!!!!
         with open('drone_positions.csv', 'w', newline='') as output_file:
@@ -67,7 +67,7 @@ def main(args=None):
             dict_writer.writerows(Pos_node.data_list)
         print("Data saved to 'drone_positions.csv'")
     finally:
-        Pos_node.destroy_node()
+        pos_node.destroy_node()
         rclpy.shutdown()
 
 if __name__ == '__main__':
