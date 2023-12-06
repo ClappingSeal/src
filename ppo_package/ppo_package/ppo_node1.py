@@ -31,17 +31,17 @@ def ppo(start, goal, obstacles, velocity=3):
 
     start = np.array(start)
     goal = np.array(goal) - start
-    obstacle0 = obstacles[0] - start
-    obstacle1 = obstacles[0] - start
-    obstacle2 = obstacles[0] - start
+    scale = 0.02
+
+    obstacle0 = (obstacles[0] - start) * scale
+    obstacle1 = (obstacles[0] - start) * scale
+    obstacle2 = (obstacles[0] - start) * scale
 
     observation = np.concatenate((goal, obstacle0, obstacle1, obstacle2, [0, 0], [0, 0], [0, 0]), axis=0)
-
-    observation = np.array(observation) * 0.4530495 / 30
+    observation = np.array(observation)
     action, _ = model.predict(observation)
 
-    return start + change_action(action)
-
+    return start + change_action(action) * velocity
 
 class PPONode1(Node):
     def __init__(self):
