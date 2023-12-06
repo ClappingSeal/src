@@ -49,7 +49,7 @@ def apf(start, goal, obstacles, velocity=3, distract_rate=8):
 
 class APFNode1(Node):
     def __init__(self):
-        super().__init__('apf_node1')
+        super().__init__('apf_lstm_node1')
         self.srv = self.create_service(APF, 'apf1', self.apf_callback)
         self.subscription = self.create_subscription(Float64MultiArray, 'drone_info', self.listener_callback, 10)
         self.drone_id = 1.0  # setting value !!!
@@ -80,21 +80,22 @@ class APFNode1(Node):
         obstacles = []
 
         # LSTM
-        new_data = np.array([
-            self.recent_positions[self.drone_id][0],
-            self.recent_positions[self.drone_id][1],
-            self.recent_positions[self.drone_id][2],
-            [None, None]
-        ])
-        predicted_position = LSTM_prediction(new_data)
+        for drone_id, positions in self.recent_positions.items():
+            if drone_id != self.drone_id and len(positions) >= 3:
+                new_data = np.array([
+                    positions[0],
+                    positions[1],
+                    positions[2],
+                    [None, None]
+                ])
+                predicted_position = LSTM_prediction(new_data)
 
-        # 예측된 위치
-        if predicted_position is not None:
-            obstacles.append(predicted_position)
+                # 예측된 위치
+                if predicted_position is not None:
+                    obstacles.append(predicted_position)
 
-        # 가장 최근 위치
-        if len(self.recent_positions[self.drone_id]) >= 1:
-            obstacles.append(self.recent_positions[self.drone_id][-1])
+                # 가장 최근 위치
+                obstacles.append(positions[2])
 
         if self.start is None:
             self.get_logger().warn('Waiting for drone start position...')
@@ -103,8 +104,6 @@ class APFNode1(Node):
         goal = np.array([request.goal[0], request.goal[1]])
         next_position = apf(self.start, goal, obstacles)
         response.path = list(np.array(next_position).flatten())
-
-        print(obstacles)
         return response
 
 
