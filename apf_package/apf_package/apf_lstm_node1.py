@@ -103,6 +103,7 @@ class APFNode1(Node):
 
                 # 가장 최근 위치
                 obstacles.append(positions[2])
+                print(predicted_position, obstacles)
 
         if self.start is None:
             self.get_logger().warn('Waiting for drone start position...')
