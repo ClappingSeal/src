@@ -64,7 +64,7 @@ def main(args=None):
         with open('drone_positions.csv', 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
-            dict_writer.writerows(Pos_node.data_list)
+            dict_writer.writerows(pos_node.data_list)
         print("Data saved to 'drone_positions.csv'")
     finally:
         pos_node.destroy_node()
