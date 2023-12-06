@@ -66,14 +66,12 @@ def main(args=None):
     try:
         rclpy.spin(pos_node)
     except KeyboardInterrupt:
-        keys = ['Drone_ID', 'X', 'Y', 'Z']
-        with open('current_drone_positions.csv', 'w', newline='') as output_file:
+        keys = ['Time', 'x1', 'y1', 'z1', 'x2', 'y2', 'z2'] # 드론 추가시 여기다 정보 추가 !!!!!!!!!!
+        with open('drone_positions.csv', 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
-            for drone_id, position in pos_node.current_positions.items():
-                dict_writer.writerow({'Drone_ID': drone_id, 'X': position[0], 'Y': position[1], 'Z': position[2]})
-        print("Current positions saved to 'current_drone_positions.csv'")
-        pos_node.print_recent_positions()
+            dict_writer.writerows(Pos_node.data_list)
+        print("Data saved to 'drone_positions.csv'")
     finally:
         pos_node.destroy_node()
         rclpy.shutdown()
