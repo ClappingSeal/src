@@ -72,9 +72,16 @@ class APFNode1(Node):
     def update_recent_positions(self, drone_id, position):
         if drone_id not in self.recent_positions:
             self.recent_positions[drone_id] = []
+
         self.recent_positions[drone_id].append(position)
-        if len(self.recent_positions[drone_id]) > 3:
+
+        # 리스트의 길이가 3보다 클 경우, 가장 오래된 위치를 제거
+        while len(self.recent_positions[drone_id]) > 3:
             self.recent_positions[drone_id].pop(0)
+
+        # 리스트의 길이가 3보다 짧을 경우, 가장 최근의 위치로 나머지 부분을 채움
+        while len(self.recent_positions[drone_id]) < 3:
+            self.recent_positions[drone_id].append(position)
 
     def apf_callback(self, request, response):
         obstacles = []
