@@ -25,7 +25,6 @@ setup(
             'land_client1 = drone_package.land_client1:main',
             'land_client2 = drone_package.land_client2:main',
             'pos_sub = drone_package.pos_sub:main',
-            'pos_sub_lstm = drone_package.pos_sub_lstm;main',
             'takeoff_client1 = drone_package.takeoff_client1:main',
             'takeoff_client2 = drone_package.takeoff_client2:main',
             'goto_client1 = drone_package.goto_client1:main',
