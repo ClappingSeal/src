@@ -5,7 +5,7 @@ from msgs.srv import APF
 import numpy as np
 
 
-def apf(start, goal, obstacles, velocity=3, distract_rate=10):
+def apf(start, goal, obstacles, velocity=3, distract_rate=8):
     q = np.array(start)
     att_force = velocity * (goal - q) / np.linalg.norm(goal - q)
     rep_force = np.zeros(2)
@@ -13,11 +13,9 @@ def apf(start, goal, obstacles, velocity=3, distract_rate=10):
     for obs in obstacles:
         rho = np.linalg.norm(q - obs)
         if rho < distract_rate:
-            rep_force += velocity * (1.0 / rho - 1.0 / distract_rate) * ((q - obs) / rho) * 15
+            rep_force += velocity * (1.0 / rho - 1.0 / distract_rate) * ((q - obs) / rho) * 10
 
     total_force = att_force + rep_force
-    print(total_force)
-
     q = q + total_force
     return q
 
