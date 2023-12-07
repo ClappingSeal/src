@@ -7,7 +7,6 @@ from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 
 
-# 모델 구조를 정의하는 함수
 def create_model():
     model = Sequential()
     model.add(LSTM(20, activation='tanh', input_shape=(3, 2), return_sequences=True))
@@ -16,12 +15,11 @@ def create_model():
     return model
 
 
-# 모델을 생성하고 가중치를 로드합니다.
 model_LSTM = create_model()
 model_LSTM.load_weights('lstm_drone_positions_model.keras')
 
 
-# LSTM 예측 함수
+# LSTM
 def LSTM_prediction(array, time_steps=3):
     def inverse_min_max_scale(scaled_data, min_val, max_val):
         return scaled_data * (max_val - min_val) + min_val
