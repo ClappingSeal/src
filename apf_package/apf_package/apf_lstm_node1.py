@@ -5,7 +5,6 @@ from msgs.srv import APF
 import numpy as np
 from tensorflow.keras.models import load_model
 
-# 저장된 모델 로드
 model_LSTM = load_model('lstm_drone_positions_model.keras')
 
 
@@ -47,15 +46,16 @@ def apf(start, goal, obstacles, velocity=3, distract_rate=8):
     q = q + total_force
     return q
 
+print("1112121412")
+
 
 class APFNode1(Node):
     def __init__(self):
-        super().__init__('apf_lstm_node1')
+        super().__init__('apf_node1')
         self.srv = self.create_service(APF, 'apf1', self.apf_callback)
         self.subscription = self.create_subscription(Float64MultiArray, 'drone_info', self.listener_callback, 10)
         self.drone_id = 1.0  # setting value !!!
         self.current_positions = {}
-        self.recent_positions = {}
         self.start = None
 
     def listener_callback(self, msg):
@@ -65,56 +65,19 @@ class APFNode1(Node):
             self.start = np.array([x, y])
             self.get_logger().info(f'Start{self.drone_id}: {self.start}')
         else:
-            position = np.array([x, y])
-            self.current_positions[n] = position
-            self.update_recent_positions(n, position)
-            self.get_logger().info(f'Obstacle: {position} for drone {n}')
-
-    def update_recent_positions(self, drone_id, position):
-        if drone_id not in self.recent_positions:
-            self.recent_positions[drone_id] = []
-
-        self.recent_positions[drone_id].append(position)
-
-        # 리스트의 길이가 3보다 클 경우, 가장 오래된 위치를 제거
-        while len(self.recent_positions[drone_id]) > 4:
-            self.recent_positions[drone_id].pop(0)
-
-        # 리스트의 길이가 3보다 짧을 경우, 가장 최근의 위치로 나머지 부분을 채움
-        while len(self.recent_positions[drone_id]) < 4:
-            self.recent_positions[drone_id].append(position)
+            self.current_positions[n] = np.array([x, y])
+            self.get_logger().info(f'Obstacle: {self.current_positions[n]} for drone {n}')
 
     def apf_callback(self, request, response):
-        obstacles = []
-
-        # LSTM
-        for drone_id, positions in self.recent_positions.items():
-            if drone_id != self.drone_id and len(positions) >= 3:
-                new_data = np.array([
-                    positions[0],
-                    positions[1],
-                    positions[2],
-                    [0, 0]
-                ])
-                predicted_position = LSTM_prediction(new_data)
-
-                # 예측된 위치
-                if predicted_position is not None:
-                    obstacles.append(predicted_position)
-
-                # 가장 최근 위치
-                obstacles.append(positions[2])
-
+        obstacles = list(self.current_positions.values())
+        # obstacles.append([3, 5])
         if self.start is None:
             self.get_logger().warn('Waiting for drone start position...')
             return response
-
         goal = np.array([request.goal[0], request.goal[1]])
         next_position = apf(self.start, goal, obstacles)
         response.path = list(np.array(next_position).flatten())
-        print(obstacles)
         return response
-
 
 def main(args=None):
     rclpy.init(args=args)
