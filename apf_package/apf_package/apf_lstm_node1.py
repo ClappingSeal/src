@@ -10,8 +10,8 @@ import numpy as np
 # 모델 구조를 정의하는 함수
 def create_model():
     model = Sequential()
-    model.add(LSTM(50, activation='tanh', input_shape=(3, 2), return_sequences=True))
-    model.add(LSTM(50, activation='tanh'))
+    model.add(LSTM(20, activation='tanh', input_shape=(3, 2), return_sequences=True))
+    model.add(LSTM(20, activation='tanh'))
     model.add(Dense(2))
     return model
 
