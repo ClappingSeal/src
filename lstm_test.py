@@ -1,9 +1,21 @@
 import pandas as pd
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 
-# LSTM 모델 로드
-model_LSTM = load_model('lstm_drone_positions_model.keras')
+
+# 모델 구조를 정의하는 함수
+def create_model():
+    model = Sequential()
+    model.add(LSTM(50, activation='tanh', input_shape=(3, 2), return_sequences=True))
+    model.add(LSTM(50, activation='tanh'))
+    model.add(Dense(2))
+    return model
+
+
+# 모델을 생성하고 가중치를 로드합니다.
+model_LSTM = create_model()
+model_LSTM.load_weights('lstm_drone_positions_model.keras')
 
 
 # LSTM 예측 함수
