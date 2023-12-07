@@ -22,3 +22,10 @@ try:
 except Exception as e:
     print("모델 로드 중 오류 발생:", e)
     # 여기에서 추가적인 오류 처리 또는 로깅을 할 수 있습니다
+
+def main():
+    # 여기에 실행 로직을 작성하세요
+    pass
+
+if __name__ == "__main__":
+    main()
