@@ -13,6 +13,8 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
+model = PPO_model.load("PPO")
+
 
 # LSTM
 def LSTM_prediction(array, time_steps=3):
