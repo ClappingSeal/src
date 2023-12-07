@@ -50,9 +50,11 @@ class TD3ClientNode(Node):
                 threshold_distance = 0.5  # 골 세팅 값
 
                 if distance <= threshold_distance:
+                    time.sleep(1)
                     land_request = LAND.Request()
                     future_land = self.cli_land.call_async(land_request)
                     rclpy.spin_until_future_complete(self, future_land)
+                    time.sleep(1)
 
                     if future_land.result() is not None:
                         self.get_logger().info(f'Result of LAND: {future_land.result().message}')
