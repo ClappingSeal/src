@@ -9,8 +9,8 @@ import numpy as np
 
 def create_model():
     model = Sequential()
-    model.add(LSTM(50, activation='tanh', input_shape=(3, 2), return_sequences=True))
-    model.add(LSTM(50, activation='tanh'))
+    model.add(LSTM(20, activation='tanh', input_shape=(3, 2), return_sequences=True))
+    model.add(LSTM(20, activation='tanh'))
     model.add(Dense(2))
     return model
 
