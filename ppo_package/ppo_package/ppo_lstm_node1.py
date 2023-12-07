@@ -5,9 +5,10 @@ from msgs.srv import PPO
 import numpy as np
 import math
 from stable_baselines3 import PPO as PPO_model
-import tensorflow as tf
+from tensorflow.lite.python.interpreter import Interpreter
 
-interpreter = tf.lite.Interpreter(model_path='lstm_drone_positions_model.tflite')
+# TensorFlow Lite 인터프리터 초기화
+interpreter = Interpreter(model_path='lstm_drone_positions_model.tflite')
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
