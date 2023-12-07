@@ -7,7 +7,6 @@ import math
 from stable_baselines3 import PPO as PPO_model
 import tensorflow as tf
 
-
 interpreter = tf.lite.Interpreter(model_path='lstm_drone_positions_model.tflite')
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
