@@ -103,12 +103,10 @@ class PPONode1(Node):
         n, x, y, _ = data
         if n == self.drone_id:
             self.start = np.array([x, y])
-            self.get_logger().info(f'Start{self.drone_id}: {self.start}')
         else:
             position = np.array([x, y])
             self.current_positions[n] = position
             self.update_recent_positions(n, position)
-            self.get_logger().info(f'Obstacle: {position} for drone {n}')
 
     def update_recent_positions(self, drone_id, position):
         if drone_id not in self.recent_positions:
@@ -146,7 +144,6 @@ class PPONode1(Node):
                 obstacles.append(positions[2])
 
         if self.start is None:
-            self.get_logger().warn('Waiting for drone start position...')
             return response
 
         goal = np.array([request.goal[0], request.goal[1]])
