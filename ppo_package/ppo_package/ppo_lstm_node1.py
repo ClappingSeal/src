@@ -7,82 +7,6 @@ import math
 from tensorflow.lite.python.interpreter import Interpreter
 from stable_baselines3.ppo import PPO as PPO_model
 
-# TensorFlow Lite 인터프리터 초기화
-interpreter = Interpreter(model_path='lstm_drone_positions_model.tflite')
-interpreter.allocate_tensors()
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
-
-model = PPO_model.load("PPO")
-
-
-# LSTM
-def LSTM_prediction(array, time_steps=3):
-    def inverse_min_max_scale(scaled_data, min_val, max_val):
-        return scaled_data * (max_val - min_val) + min_val
-
-    def preprocess_data(new_data, time_steps=1):
-        def min_max_scale(data):
-            min_val = np.min(data, axis=0)
-            max_val = np.max(data, axis=0)
-            scaled_data = (data - min_val) / (max_val - min_val)
-            return scaled_data, min_val, max_val
-
-        scaled_data, min_val, max_val = min_max_scale(new_data)
-        X_new = []
-        for i in range(len(scaled_data) - time_steps):
-            X_new.append(scaled_data[i:(i + time_steps), :])
-        return np.array(X_new), min_val, max_val
-
-    array = np.array(array, dtype=np.float32)
-    X_new, min_val, max_val = preprocess_data(array, time_steps)
-
-    # TensorFlow Lite 모델로 예측
-    interpreter.set_tensor(input_details[0]['index'], X_new)
-    interpreter.invoke()
-    predictions = interpreter.get_tensor(output_details[0]['index'])
-
-    # 예측값 역변환
-    predictions_rescaled = inverse_min_max_scale(predictions, min_val, max_val)
-
-    return predictions_rescaled
-
-
-
-def ppo(start, goal, obstacles, velocity=3):
-    def change_action(num):
-        sq = math.sqrt(2) / 2
-        if num == 0:
-            return np.array([0, velocity])
-        elif num == 1:
-            return np.array([velocity * sq, velocity * sq])
-        elif num == 2:
-            return np.array([velocity, 0])
-        elif num == 3:
-            return np.array([velocity * sq, -velocity * sq])
-        elif num == 4:
-            return np.array([0, -velocity])
-        elif num == 5:
-            return np.array([-velocity * sq, -velocity * sq])
-        elif num == 6:
-            return np.array([-velocity, 0])
-        elif num == 7:
-            return np.array([-velocity * sq, velocity * sq])
-
-    start = np.array(start)
-    goal = np.array(goal) - start
-    scale = 0.02
-
-    obstacle0 = (obstacles[0] - start) * scale
-    obstacle1 = (obstacles[1] - start) * scale
-    obstacle2 = (obstacles[0] - start) * scale
-
-    observation = np.concatenate((goal, obstacle0, obstacle1, obstacle2, [0, 0], [0, 0], [0, 0]), axis=0)
-    observation = np.array(observation)
-    action, _ = model.predict(observation)
-
-    return start + change_action(action) * velocity
-
 
 class PPONode1(Node):
     def __init__(self):
@@ -93,6 +17,76 @@ class PPONode1(Node):
         self.current_positions = {}
         self.recent_positions = {}
         self.start = None
+        self.model = PPO_model.load("PPO")
+        self.interpreter = Interpreter(model_path='lstm_drone_positions_model.tflite')
+        self.interpreter.allocate_tensors()
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
+
+    # LSTM
+    def LSTM_prediction(self, array, time_steps=3):
+        def inverse_min_max_scale(scaled_data, min_val, max_val):
+            return scaled_data * (max_val - min_val) + min_val
+
+        def preprocess_data(new_data, time_steps=1):
+            def min_max_scale(data):
+                min_val = np.min(data, axis=0)
+                max_val = np.max(data, axis=0)
+                scaled_data = (data - min_val) / (max_val - min_val)
+                return scaled_data, min_val, max_val
+
+            scaled_data, min_val, max_val = min_max_scale(new_data)
+            X_new = []
+            for i in range(len(scaled_data) - time_steps):
+                X_new.append(scaled_data[i:(i + time_steps), :])
+            return np.array(X_new), min_val, max_val
+
+        array = np.array(array, dtype=np.float32)
+        X_new, min_val, max_val = preprocess_data(array, time_steps)
+
+        # TensorFlow Lite 모델로 예측
+        self.interpreter.set_tensor(self.input_details[0]['index'], X_new)
+        self.interpreter.invoke()
+        predictions = self.interpreter.get_tensor(self.output_details[0]['index'])
+
+        # 예측값 역변환
+        predictions_rescaled = inverse_min_max_scale(predictions, min_val, max_val)
+
+        return predictions_rescaled
+
+    def ppo(self, start, goal, obstacles, velocity=3):
+        def change_action(num):
+            sq = math.sqrt(2) / 2
+            if num == 0:
+                return np.array([0, velocity])
+            elif num == 1:
+                return np.array([velocity * sq, velocity * sq])
+            elif num == 2:
+                return np.array([velocity, 0])
+            elif num == 3:
+                return np.array([velocity * sq, -velocity * sq])
+            elif num == 4:
+                return np.array([0, -velocity])
+            elif num == 5:
+                return np.array([-velocity * sq, -velocity * sq])
+            elif num == 6:
+                return np.array([-velocity, 0])
+            elif num == 7:
+                return np.array([-velocity * sq, velocity * sq])
+
+        start = np.array(start)
+        goal = np.array(goal) - start
+        scale = 0.02
+
+        obstacle0 = (obstacles[0] - start) * scale
+        obstacle1 = (obstacles[1] - start) * scale
+        obstacle2 = (obstacles[0] - start) * scale
+
+        observation = np.concatenate((goal, obstacle0, obstacle1, obstacle2, [0, 0], [0, 0], [0, 0]), axis=0)
+        observation = np.array(observation)
+        action, _ = self.model.predict(observation)
+
+        return start + change_action(action) * velocity
 
     def listener_callback(self, msg):
         data = np.array(msg.data)
@@ -130,7 +124,7 @@ class PPONode1(Node):
                     positions[2],
                     [0, 0]
                 ])
-                predicted_position = LSTM_prediction(new_data)
+                predicted_position = self.LSTM_prediction(new_data)
 
                 # 예측된 위치
                 if predicted_position is not None:
@@ -143,9 +137,8 @@ class PPONode1(Node):
             return response
 
         goal = np.array([request.goal[0], request.goal[1]])
-        next_position = ppo(self.start, goal, obstacles)
+        next_position = self.ppo(self.start, goal, obstacles)
         response.path = list(np.array(next_position).flatten())
-        gc.collect
         return response
 
 
