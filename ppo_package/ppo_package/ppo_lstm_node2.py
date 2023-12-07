@@ -2,25 +2,16 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
 from msgs.srv import PPO
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 import math
 from stable_baselines3 import PPO as PPO_model
-import gc
+import tensorflow as tf
 
 
-def create_model():
-    model = Sequential()
-    model.add(LSTM(20, activation='tanh', input_shape=(3, 2), return_sequences=True))
-    model.add(LSTM(20, activation='tanh'))
-    model.add(Dense(2))
-    return model
-
-
-model = PPO_model.load("PPO")
-model_LSTM = create_model()
-model_LSTM.load_weights('lstm_drone_positions_model.keras')
+interpreter = tf.lite.Interpreter(model_path='lstm_drone_positions_model.tflite')
+interpreter.allocate_tensors()
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 
 # LSTM
@@ -44,13 +35,16 @@ def LSTM_prediction(array, time_steps=3):
     array = np.array(array, dtype=np.float32)
     X_new, min_val, max_val = preprocess_data(array, time_steps)
 
-    predictions = model_LSTM.predict(X_new, batch_size=1)
+    # TensorFlow Lite 모델로 예측
+    interpreter.set_tensor(input_details[0]['index'], X_new)
+    interpreter.invoke()
+    predictions = interpreter.get_tensor(output_details[0]['index'])
+
+    # 예측값 역변환
     predictions_rescaled = inverse_min_max_scale(predictions, min_val, max_val)
 
-    del X_new, predictions
-    gc.collect()
-
     return predictions_rescaled
+
 
 
 def ppo(start, goal, obstacles, velocity=3):
