@@ -2,13 +2,13 @@ import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
-
+import gc
 
 # 모델 구조를 정의하는 함수
 def create_model():
     model = Sequential()
-    model.add(LSTM(50, activation='tanh', input_shape=(3, 2), return_sequences=True))
-    model.add(LSTM(50, activation='tanh'))
+    model.add(LSTM(20, activation='tanh', input_shape=(3, 2), return_sequences=True))
+    model.add(LSTM(20, activation='tanh'))
     model.add(Dense(2))
     return model
 
@@ -36,10 +36,15 @@ def LSTM_prediction(array, time_steps=3):
             X_new.append(scaled_data[i:(i + time_steps), :])
         return np.array(X_new), min_val, max_val
 
-    array = np.nan_to_num(array)
+    array = np.array(array, dtype=np.float32)
     X_new, min_val, max_val = preprocess_data(array, time_steps)
-    predictions = model_LSTM.predict(X_new)
+
+    predictions = model_LSTM.predict(X_new, batch_size=1)
     predictions_rescaled = inverse_min_max_scale(predictions, min_val, max_val)
+
+    del X_new, predictions
+    gc.collect()
+
     return predictions_rescaled
 
 
