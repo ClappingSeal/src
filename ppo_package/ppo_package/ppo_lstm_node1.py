@@ -19,6 +19,8 @@ def create_model():
 
 
 model = PPO_model.load("PPO")
+time.sleep(10)
+print("PPO loaded!")
 model_LSTM = create_model()
 model_LSTM.load_weights('lstm_drone_positions_model.keras')
 
