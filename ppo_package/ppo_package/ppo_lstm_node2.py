@@ -7,6 +7,7 @@ from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 import math
 from stable_baselines3 import PPO as PPO_model
+import gc
 
 
 def create_model():
@@ -40,10 +41,15 @@ def LSTM_prediction(array, time_steps=3):
             X_new.append(scaled_data[i:(i + time_steps), :])
         return np.array(X_new), min_val, max_val
 
-    array = np.nan_to_num(array)
+    array = np.array(array, dtype=np.float32)
     X_new, min_val, max_val = preprocess_data(array, time_steps)
-    predictions = model_LSTM.predict(X_new)
+
+    predictions = model_LSTM.predict(X_new, batch_size=1)
     predictions_rescaled = inverse_min_max_scale(predictions, min_val, max_val)
+
+    del X_new, predictions
+    gc.collect()
+
     return predictions_rescaled
 
 
