@@ -1,6 +1,0 @@
-float64[] start
-float64[] goal
-float64[] obstacles_x
-float64[] obstacles_y
----
-float64[] path
