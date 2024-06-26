@@ -19,8 +19,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LAND.srv"
   "srv/GOTO.srv"
   "srv/APF.srv"
-  "srv/PPO.srv"
-  "srv/TD3.srv"
   "msg/POS.msg"
 )
 
