@@ -1,86 +1,37 @@
 import rclpy
 from rclpy.node import Node
-from msgs.srv import APF
-from msgs.srv import GOTO
-from msgs.srv import LAND
-import argparse
-import math
-import time
+from geometry_msgs.msg import Point
+from std_msgs.msg import Float64MultiArray
+import sys
 
-
-class APFClientNode(Node):
-    def __init__(self, goal_x, goal_y):
+class APFClient(Node):
+    def __init__(self):
         super().__init__('apf_client1')
-        self.cli_apf = self.create_client(APF, 'apf1')
-        while not self.cli_apf.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for APF service to become available...')
+        self.client = self.create_client(Float64MultiArray, 'calculate_force_vector')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+        self.request = Float64MultiArray()
 
-        self.cli_goto = self.create_client(GOTO, 'goto1')
-        while not self.cli_goto.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for GOTO service to become available...')
-
-        self.cli_land = self.create_client(LAND, 'land1')
-        while not self.cli_land.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for LAND service to become available...')
-
-        self.req = APF.Request()
-        self.send_request([goal_x, goal_y])
-
-    def send_request(self, goal):
-        self.req.goal = goal
-        future = self.cli_apf.call_async(self.req)
+    def send_request(self, start, goal, obstacles):
+        self.request.data = start + goal + [item for sublist in obstacles for item in sublist]
+        future = self.client.call_async(self.request)
         rclpy.spin_until_future_complete(self, future)
-
-        if future.result() is not None:
-            path = list(future.result().path)
-            print(path)
-
-            goto_request = GOTO.Request()
-            goto_request.x = float(path[0])
-            goto_request.y = float(path[1])
-            goto_request.z = float(3) # 높이 세팅 값
-            future_goto = self.cli_goto.call_async(goto_request)
-            rclpy.spin_until_future_complete(self, future_goto)
-
-            if future_goto.result() is not None:
-                self.get_logger().info(f'Result of GOTO: {future_goto.result().message}')
-
-                # Check distance to target
-                distance = math.sqrt((goal[0] - path[0]) ** 2 + (goal[1] - path[1]) ** 2)
-                threshold_distance = 0.5  # 골 세팅값
-
-                if distance <= threshold_distance:
-                    time.sleep(1)
-                    land_request = LAND.Request()
-                    future_land = self.cli_land.call_async(land_request)
-                    rclpy.spin_until_future_complete(self, future_land)
-                    time.sleep(1)
-
-                    if future_land.result() is not None:
-                        self.get_logger().info(f'Result of LAND: {future_land.result().message}')
-
-                    while True:
-                        self.get_logger().info('Mission Complete')
-                        time.sleep(5000)
-
-            else:
-                self.get_logger().error('Exception while calling GOTO service')
-
-        else:
-            self.get_logger().error('Exception while calling APF service')
-
+        return future.result().data
 
 def main(args=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('goal_x', type=float, help='X coordinate of goal')
-    parser.add_argument('goal_y', type=float, help='Y coordinate of goal')
-    args = parser.parse_args()
+    rclpy.init(args=args)
 
-    rclpy.init(args=None)
-    client_node = APFClientNode(args.goal_x, args.goal_y)
-    client_node.destroy_node()
+    apf_client = APFClient()
+
+    start = [float(x) for x in sys.argv[1].strip('[]').split(',')]
+    goal = [float(x) for x in sys.argv[2].strip('[]').split(',')]
+    obstacles = [list(map(float, ob.strip('[]').split(','))) for ob in sys.argv[3:]]
+
+    response = apf_client.send_request(start, goal, obstacles)
+    print(f'Response: {response}')
+
+    apf_client.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
