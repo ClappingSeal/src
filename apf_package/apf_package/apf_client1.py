@@ -1,12 +1,12 @@
 import rclpy
 from rclpy.node import Node
-from apf_package.srv import CalculateForce
+from msgs.srv import APF
 import sys
 
 class APFClient(Node):
     def __init__(self):
         super().__init__('apf_client1')
-        self.client = self.create_client(CalculateForce, 'calculate_force_vector')
+        self.client = self.create_client(APF, 'apf1')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
         self.request = CalculateForce.Request()
