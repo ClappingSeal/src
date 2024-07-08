@@ -42,8 +42,8 @@ class Drone_node1(Node):
         # Position message
         self.position = POS()
         self.drone_num = 1
-        self.init_lat = 35.2266470
-        self.init_lon = 126.8405244
+        # self.init_lat = 35.2266470
+        # self.init_lon = 126.8405244
 
         # Arming value
         self.min_throttle = 1000
