@@ -45,13 +45,13 @@ class Drone_node1(Node):
         self.init_lat = self.vehicle.location.global_relative_frame.lat
         self.init_lon = self.vehicle.location.global_relative_frame.lon
 
-        # # Check position
-        # if self.init_lat is None or self.init_lon is None:
-        #     raise ValueError("Latitude or Longitude value is None. Class initialization aborted.")
-        # print("Drone current location : ", self.init_lat, "lat, ", self.init_lon, "lon")
+        # Check position
+        if self.init_lat is None or self.init_lon is None:
+            raise ValueError("Latitude or Longitude value is None. Class initialization aborted.")
+        print("Drone current location : ", self.init_lat, "lat, ", self.init_lon, "lon")
         
-        # if self.init_lat == 0 or self.init_lon == 0:
-        #     raise ValueError("Cannot get Location. Class initialization aborted.")
+        if self.init_lat == 0 or self.init_lon == 0:
+            raise ValueError("Cannot get Location. Class initialization aborted.")
 
     def takeoff(self, h):
         self.vehicle.mode = VehicleMode("STABILIZE")
