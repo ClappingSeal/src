@@ -9,7 +9,7 @@ class APFClient(Node):
         self.client = self.create_client(STATE, 'apf')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
-        self.request = APF.Request()
+        self.request = STATE.Request()
 
     def send_request(self, start, goal, x, y):
         self.request.start = start
