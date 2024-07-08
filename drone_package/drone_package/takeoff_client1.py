@@ -34,7 +34,7 @@ def main(args=None):
             print(3)
             print('!!!!!!!!!!!!!!!!!!!!!')
     else:
-        altitude = 3  # Default altitude for takeoff
+        altitude = 4  # Default altitude for takeoff
 
     takeoff_client1 = Takeoff_client1(altitude)
     takeoff_client1.send_request()
