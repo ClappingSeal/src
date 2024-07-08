@@ -30,7 +30,7 @@ def main(args=None):
         try:
             altitude = float(args[1])
         except ValueError:
-            altitude = 3  # Default value if not provided
+            altitude = 5  # Default value if not provided
             print(3)
             print('!!!!!!!!!!!!!!!!!!!!!')
     else:
