@@ -7,18 +7,18 @@ class APFNode(Node):
         super().__init__('apf_node')
         self.srv = self.create_service(APF, 'apf1', self.apf_callback)
 
-    def calculate_force_callback(self, request, response):
+    def apf_callback(self, request, response):
         start = request.start
         goal = request.goal
         x = request.x
         y = request.y
         obstacles = list(zip(x, y))
 
-        force_vector = self.calculate_force(start, goal, obstacles)
+        force_vector = self.apf(start, goal, obstacles)
         response.force = force_vector
         return response
 
-    def calculate_APF_force(self, start, goal, obstacles):
+    def apf(self, start, goal, obstacles):
         start = [123, 321]
         goal= [123, 123]
         obstacles = [[1, 2], [2, 5]]
