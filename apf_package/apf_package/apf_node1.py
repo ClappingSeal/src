@@ -1,52 +1,63 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
-from geometry_msgs.msg import Point
+from msgs.srv import APF
+import numpy as np
 
-class APFNode(Node):
+
+def apf(start, goal, obstacles, velocity=3, distract_rate=8):
+    q = np.array(start)
+    att_force = velocity * (goal - q) / np.linalg.norm(goal - q)
+    rep_force = np.zeros(2)
+
+    for obs in obstacles:
+        rho = np.linalg.norm(q - obs)
+        if rho < distract_rate:
+            rep_force += velocity * (1.0 / rho - 1.0 / distract_rate) * ((q - obs) / rho) * 10
+
+    total_force = att_force + rep_force
+    q = q + total_force
+    return q
+
+
+class APFNode2(Node):
     def __init__(self):
-        super().__init__('apf_node1')
-        self.srv = self.create_service(Float64MultiArray, 'calculate_force_vector', self.calculate_force_callback)
+        super().__init__('apf_node2')
+        self.srv = self.create_service(APF, 'apf2', self.apf_callback)
+        self.subscription = self.create_subscription(Float64MultiArray, 'drone_info', self.listener_callback, 10)
+        self.drone_id = 2.0  # setting value !!!
+        self.current_positions = {}
+        self.start = None
 
-    def calculate_force_callback(self, request, response):
-        data = request.data
-        start = data[0:2]
-        goal = data[2:4]
-        obstacles = [data[i:i+2] for i in range(4, len(data), 2)]
+    def listener_callback(self, msg):
+        data = np.array(msg.data)
+        n, x, y, _ = data
+        if n == self.drone_id:
+            self.start = np.array([x, y])
+            self.get_logger().info(f'Start{self.drone_id}: {self.start}')
+        else:
+            self.current_positions[n] = np.array([x, y])
+            self.get_logger().info(f'Obstacle: {self.current_positions[n]} for drone {n}')
 
-        force_vector = self.calculate_force(start, goal, obstacles)
-        response.data = force_vector
+    def apf_callback(self, request, response):
+        obstacles = list(self.current_positions.values())
+        # obstacles.append([3, 5])
+        if self.start is None:
+            self.get_logger().warn('Waiting for drone start position...')
+            return response
+        goal = np.array([request.goal[0], request.goal[1]])
+        next_position = apf(self.start, goal, obstacles)
+        response.path = list(np.array(next_position).flatten())
         return response
 
-    def calculate_force(self, start, goal, obstacles):
-        # 인공 잠재장 알고리즘을 통해 힘 벡터를 계산하는 로직을 구현
-        force = [0.0, 0.0]
-        # 계산 예시 (구체적인 APF 알고리즘을 구현)
-        for obstacle in obstacles:
-            # 예제: 장애물로 인한 repulsive force 계산 (실제 로직은 다를 수 있음)
-            ox, oy = obstacle
-            dx, dy = start[0] - ox, start[1] - oy
-            distance = (dx**2 + dy**2)**0.5
-            if distance < 1.0:  # 임계 거리
-                repulsive_force = [dx / distance, dy / distance]
-                force[0] += repulsive_force[0]
-                force[1] += repulsive_force[1]
-        
-        attractive_force = [goal[0] - start[0], goal[1] - start[1]]
-        force[0] += attractive_force[0]
-        force[1] += attractive_force[1]
-
-        return force
 
 def main(args=None):
     rclpy.init(args=args)
-
-    apf_node = APFNode()
-
-    rclpy.spin(apf_node)
-
-    apf_node.destroy_node()
+    apf_node2 = APFNode2()
+    rclpy.spin(apf_node2)
+    apf_node2.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
