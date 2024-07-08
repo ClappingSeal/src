@@ -21,10 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'apf_node1 = apf_package.apf_node1:main',
-            'apf_lstm_node1 = apf_package.apf_lstm_node1:main',
             'apf_client1 = apf_package.apf_client1:main',
             'apf_node2 = apf_package.apf_node2:main',
-            'apf_lstm_node2 = apf_package.apf_lstm_node2:main',
             'apf_client2 = apf_package.apf_client2:main',
 
         ],
