@@ -42,17 +42,20 @@ class Drone_node1(Node):
         # Position message
         self.position = POS()
         self.drone_num = 1
-        # self.init_lat = 35.2266470
-        # self.init_lon = 126.8405244
+        self.init_lat = self.vehicle.location.global_relative_frame.lat
+        self.init_lon = self.vehicle.location.global_relative_frame.lon
 
-        # Arming value
-        self.min_throttle = 1000
-        self.arm_throttle = 1200
+        # Check position
+        if self.init_lat is None or self.init_lon is None:
+            raise ValueError("Latitude or Longitude value is None. Class initialization aborted.")
+        print("Drone current location : ", self.init_lat, "lat, ", self.init_lon, "lon")
+        
+        if self.init_lat == 0 or self.init_lon == 0:
+            raise ValueError("Cannot get Location. Class initialization aborted.")
 
     def takeoff(self, h):
-        self.vehicle.channels.overrides['3'] = self.min_throttle
         self.vehicle.mode = VehicleMode("STABILIZE")
-        time.sleep(1)
+        time.sleep(0.5)
 
         cmds = self.vehicle.commands
         cmds.download()
@@ -64,9 +67,12 @@ class Drone_node1(Node):
         cmds.upload()
         time.sleep(0.5)  # upload wait
 
-        self.vehicle.armed = True
-        time.sleep(0.1)
-        self.vehicle.channels.overrides['3'] = self.arm_throttle
+        self.vehicle._master.mav.command_long_send(
+            self.vehicle._master.target_system,
+            self.vehicle._master.target_component,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            0, 1, 0, 0, 0, 0, 0, 0)
+
         time.sleep(3)
         print("ARMED : ", self.vehicle.armed)
 
@@ -156,7 +162,7 @@ class Drone_node1(Node):
             mavutil.mavlink.MAV_CMD_NAV_LAND, 0,
             0, 0, 0, 0, 0, 0, 0, 0)
 
-        while self.vehicle.location.global_relative_frame.alt > 0.2:
+        while self.vehicle.location.global_relative_frame.alt > 0.3:
             print(f"Altitude: {self.vehicle.location.global_relative_frame.alt}")
             time.sleep(1)
         print("Landed successfully!!!!!!!!!!!!!!!!!!!!")
