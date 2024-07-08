@@ -1,63 +1,35 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float64MultiArray
 from msgs.srv import APF
-import numpy as np
 
-
-def apf(start, goal, obstacles, velocity=3, distract_rate=8):
-    q = np.array(start)
-    att_force = velocity * (goal - q) / np.linalg.norm(goal - q)
-    rep_force = np.zeros(2)
-
-    for obs in obstacles:
-        rho = np.linalg.norm(q - obs)
-        if rho < distract_rate:
-            rep_force += velocity * (1.0 / rho - 1.0 / distract_rate) * ((q - obs) / rho) * 10
-
-    total_force = att_force + rep_force
-    q = q + total_force
-    return q
-
-
-class APFNode2(Node):
+class APFNode(Node):
     def __init__(self):
-        super().__init__('apf_node2')
-        self.srv = self.create_service(APF, 'apf2', self.apf_callback)
-        self.subscription = self.create_subscription(Float64MultiArray, 'drone_info', self.listener_callback, 10)
-        self.drone_id = 2.0  # setting value !!!
-        self.current_positions = {}
-        self.start = None
+        super().__init__('apf_node')
+        self.srv = self.create_service(APF, 'apf1', self.apf_callback)
 
-    def listener_callback(self, msg):
-        data = np.array(msg.data)
-        n, x, y, _ = data
-        if n == self.drone_id:
-            self.start = np.array([x, y])
-            self.get_logger().info(f'Start{self.drone_id}: {self.start}')
-        else:
-            self.current_positions[n] = np.array([x, y])
-            self.get_logger().info(f'Obstacle: {self.current_positions[n]} for drone {n}')
+    def calculate_APF_force_callback(self, request, response):
+        start = request.start
+        goal = request.goal
+        obstacles = request.obstacles
 
-    def apf_callback(self, request, response):
-        obstacles = list(self.current_positions.values())
-        # obstacles.append([3, 5])
-        if self.start is None:
-            self.get_logger().warn('Waiting for drone start position...')
-            return response
-        goal = np.array([request.goal[0], request.goal[1]])
-        next_position = apf(self.start, goal, obstacles)
-        response.path = list(np.array(next_position).flatten())
+        force_vector = self.calculate_APF_force(start, goal, obstacles)
+        response.force = force_vector
         return response
 
+    def calculate_APF_force(self, start, goal, obstacles):
+        start = [123, 321]
+        goal= [123, 123]
+        obstacles = [[1, 2], [2, 5]]
+        
+        force = [123, 123]
+        return force
 
 def main(args=None):
     rclpy.init(args=args)
-    apf_node2 = APFNode2()
-    rclpy.spin(apf_node2)
-    apf_node2.destroy_node()
+    apf_node = APFNode()
+    rclpy.spin(apf_node)
+    apf_node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
