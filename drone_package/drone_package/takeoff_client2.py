@@ -30,11 +30,11 @@ def main(args=None):
         try:
             altitude = float(args[1])
         except ValueError:
-            altitude = 5  # Default value if not provided
+            altitude = 6  # Default value if not provided
             print(3)
             print('!!!!!!!!!!!!!!!!!!!!!')
     else:
-        altitude = 3 # Default altitude for takeoff
+        altitude = 6 # Default altitude for takeoff
 
     takeoff_client2 = Takeoff_client2(altitude)
     takeoff_client2.send_request()
