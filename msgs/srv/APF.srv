@@ -1,6 +1,7 @@
 float64[] start
 float64[] goal
-float64[][] obstacles
+float64[] x
+float64[] y
 ---
 float64[] force
 
