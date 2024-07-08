@@ -7,12 +7,14 @@ class APFNode(Node):
         super().__init__('apf_node')
         self.srv = self.create_service(APF, 'apf1', self.apf_callback)
 
-    def calculate_APF_force_callback(self, request, response):
+    def calculate_force_callback(self, request, response):
         start = request.start
         goal = request.goal
-        obstacles = request.obstacles
+        x = request.x
+        y = request.y
+        obstacles = list(zip(x, y))
 
-        force_vector = self.calculate_APF_force(start, goal, obstacles)
+        force_vector = self.calculate_force(start, goal, obstacles)
         response.force = force_vector
         return response
 
