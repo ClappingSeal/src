@@ -36,7 +36,7 @@ class Drone_node1(Node):
         self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
 
         # Timer for publishing position
-        timer_period = 0.5  # seconds
+        timer_period = 0.1  # seconds
         self.timer = self.create_timer(timer_period, self.publish_position)
 
         # Position message
