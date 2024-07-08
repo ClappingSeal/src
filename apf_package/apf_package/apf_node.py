@@ -1,11 +1,11 @@
 import rclpy
 from rclpy.node import Node
-from msgs.srv import APF
+from msgs.srv import STATE
 
 class APFNode(Node):
     def __init__(self):
         super().__init__('apf_node')
-        self.srv = self.create_service(APF, 'apf1', self.apf_callback)
+        self.srv = self.create_service(STATE, 'apf', self.apf_callback)
 
     def apf_callback(self, request, response):
         start = request.start
