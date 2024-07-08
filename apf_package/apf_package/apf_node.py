@@ -16,6 +16,9 @@ class APFNode(Node):
 
         force_vector = self.apf(start, goal, obstacles)
         response.force = force_vector
+        print("start : ", start)
+        print("goal : ", goal)
+        print("obs : ", obstacles)
         return response
 
     def apf(self, start, goal, obstacles):
