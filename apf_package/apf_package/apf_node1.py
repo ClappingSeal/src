@@ -24,6 +24,7 @@ class APFNode(Node):
         obstacles = [[1, 2], [2, 5]]
         
         force = [123, 123]
+        force = float(force)
         return force
 
 def main(args=None):
