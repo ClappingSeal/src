@@ -2,5 +2,5 @@ float64[] start
 float64[] goal
 float64[][] obstacles
 ---
-float64[] path
+float64[] force
 
