@@ -20,8 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'apf_node1 = apf_package.apf_node1:main',
-            'apf_client1 = apf_package.apf_client1:main',
+            'apf_node = apf_package.apf_node:main',
+            'apf_client = apf_package.apf_client:main',
             'apf_node2 = apf_package.apf_node2:main',
             'apf_client2 = apf_package.apf_client2:main',
 
