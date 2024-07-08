@@ -1,12 +1,12 @@
 import rclpy
 from rclpy.node import Node
-from msgs.srv import APF
+from msgs.srv import STATE
 import sys
 
 class APFClient(Node):
     def __init__(self):
-        super().__init__('apf_client1')
-        self.client = self.create_client(APF, 'apf1')
+        super().__init__('apf_client')
+        self.client = self.create_client(STATE, 'apf')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
         self.request = APF.Request()
