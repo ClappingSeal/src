@@ -23,7 +23,7 @@ class APFNode(Node):
 
     def apf(self, start, goal, obstacles):
         start = [123, 321]
-        goal= [123, 123]
+        goal= [127, 123]
         obstacles = [[1, 2], [2, 5]]
         
         force = [123.0, 123.0]
