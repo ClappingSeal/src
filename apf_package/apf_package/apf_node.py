@@ -78,6 +78,7 @@ class APFNode(Node):
         print("goal : ", goal)
         print("obs : ", obstacles)
         print(force)
+        force = [12, 100]
 
         return force
 
