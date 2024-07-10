@@ -22,8 +22,8 @@ setup(
         'console_scripts': [
             'apf_node = apf_package.apf_node:main',
             'apf_client = apf_package.apf_client:main',
-            'apf_node2 = apf_package.apf_ppo_node:main',
-            'apf_client2 = apf_package.apf_ppo_client:main',
+            'apf_ppo_node = apf_package.apf_ppo_node:main',
+            'apf_ppo_client = apf_package.apf_ppo_client:main',
 
         ],
     },
