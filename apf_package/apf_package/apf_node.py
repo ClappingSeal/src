@@ -72,8 +72,7 @@ class APFNode(Node):
 
     def apf(self, start, goal, obstacles):
         env = APFEnvironment(start)
-        force = np.array(env.apf(goal, obstacles))
-        force_float = force.astype(force)
+        force = env.apf(goal, obstacles).astype(float)
         return force
 
 
