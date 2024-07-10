@@ -73,6 +73,11 @@ class APFNode(Node):
     def apf(self, start, goal, obstacles):
         env = APFEnvironment(start)
         force = env.apf(goal, obstacles)
+        
+        print('AAAAAAAAAAAAAAAAAAAAAAAA')
+        print("goal : ", goal)
+        print("obs : ", obstacles)
+        
 
         return force
 
