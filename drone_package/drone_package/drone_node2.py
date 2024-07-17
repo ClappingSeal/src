@@ -45,6 +45,9 @@ class Drone_node2(Node):
         self.init_lat = self.vehicle.location.global_relative_frame.lat
         self.init_lon = self.vehicle.location.global_relative_frame.lon
 
+        self.base_lat = 35.2266470
+        self.base_lon = 126.8405244
+
         # # Check position
         # if self.init_lat is None or self.init_lon is None:
         #     raise ValueError("Latitude or Longitude value is None. Class initialization aborted.")
@@ -97,8 +100,8 @@ class Drone_node2(Node):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
 
-        target_lat = self.init_lat + (x / LATITUDE_CONVERSION)
-        target_lon = self.init_lon - (y / LONGITUDE_CONVERSION)
+        target_lat = self.base_lat + (x / LATITUDE_CONVERSION)
+        target_lon = self.base_lon - (y / LONGITUDE_CONVERSION)
         target_alt = z
 
         if self.vehicle.mode != VehicleMode("GUIDED"):
@@ -116,10 +119,8 @@ class Drone_node2(Node):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
 
-        print(self.init_lat, y, LONGITUDE_CONVERSION)
-
-        target_lat = self.init_lat + (x / LATITUDE_CONVERSION)
-        target_lon = self.init_lon - (y / LONGITUDE_CONVERSION)
+        target_lat = self.base_lat + (x / LATITUDE_CONVERSION)
+        target_lon = self.base_lon - (y / LONGITUDE_CONVERSION)
         target_alt = z
 
         def get_distance(lat1, lon1, lat2, lon2):
