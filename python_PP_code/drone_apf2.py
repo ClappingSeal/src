@@ -15,7 +15,7 @@ class PositionSubscriber(Node):
         self.height = 6
         self.limit = 3
         self.goal_threshold = 1
-        self.timer = 0.5
+        self.timer = 2.0
         
         self.subscription = self.create_subscription(
             Float64MultiArray,
