@@ -15,7 +15,7 @@ class PositionSubscriber(Node):
         self.height = 4
         self.limit = 3
         self.goal_threshold = 1
-        self.timer = 2
+        self.timer = 0.5
         
         self.subscription = self.create_subscription(
             Float64MultiArray,
@@ -82,12 +82,14 @@ class PositionSubscriber(Node):
     def goto_client(self, x, y):
         if self.current_process is not None:
             self.current_process.terminate()
+            self.current_process.wait() 
         command = ['ros2', 'run', 'drone_package', f'goto_client{self.drone_id}', str(x), str(y), str(self.height)]
         self.current_process = subprocess.Popen(command)
 
     def land(self):
         if self.current_process is not None:
             self.current_process.terminate()
+            self.current_process.wait() 
         command = ['ros2', 'run', 'drone_package', f'land_client{self.drone_id}']
         subprocess.run(command)
 
