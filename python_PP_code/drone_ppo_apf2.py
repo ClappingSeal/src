@@ -16,6 +16,7 @@ class PositionSubscriber(Node):
         self.height = 6
         self.limit = 3
         self.goal_threshold = 1
+        self.timer = 0.5
         self.model = PPO.load("ppo_robot.zip")
 
         self.subscription = self.create_subscription(
@@ -32,7 +33,7 @@ class PositionSubscriber(Node):
         self.obstacles_copy = None
         self.obstacles_radius = None
 
-        self.create_timer(0.5, self.apf_ppo)
+        self.create_timer(self.timer, self.apf_ppo)
 
     def get_ab(self, pos, obstacles, goal):
         env = APFEnv(pos)
