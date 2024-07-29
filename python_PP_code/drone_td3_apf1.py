@@ -33,7 +33,7 @@ class PositionSubscriber(Node):
         self.obstacles_copy = None
         self.obstacles_radius = None
 
-        self.create_timer(self.timer, self.apf_ppo)
+        self.create_timer(self.timer, self.apf_td3)
 
     def get_ab(self, pos, obstacles, goal):
         env = APFEnv(pos)
@@ -71,7 +71,7 @@ class PositionSubscriber(Node):
             drone_data = [[drone_position[0], drone_position[1]], self.obstacles, self.goal]
             print(drone_data)
 
-    def apf_ppo(self):
+    def apf_td3(self):
         drone_position = self.positions.get('drone_position', None)
         if drone_position:
             self.obstacles_copy = [point[:] for point in self.obstacles]
