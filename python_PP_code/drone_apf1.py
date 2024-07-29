@@ -14,7 +14,7 @@ class PositionSubscriber(Node):
         self.force_magnitude = 1
         self.height = 4
         self.limit = 3
-        self.goal_threshold = 1
+        self.goal_threshold = 3
         self.timer = 2.0
         
         self.subscription = self.create_subscription(
