@@ -15,6 +15,8 @@ class PositionSubscriber(Node):
         self.height = 6
         self.limit = 3
         self.goal_threshold = 1
+        self.time = 0.5
+        
         self.subscription = self.create_subscription(
             Float64MultiArray,
             'drone_info',
@@ -29,7 +31,7 @@ class PositionSubscriber(Node):
         self.obstacles_copy = None
         self.obstacles_radius = None
 
-        self.create_timer(0.5, self.apf)
+        self.create_timer(self.timer, self.apf)
 
     def listener_callback(self, msg):
         drone_id = int(msg.data[0])
@@ -80,13 +82,13 @@ class PositionSubscriber(Node):
     def goto_client(self, x, y):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'goto_client1', str(x), str(y), str(self.height)]
+        command = ['ros2', 'run', 'drone_package', f'goto_client{self.drone_id}', str(x), str(y), str(self.height)]
         self.current_process = subprocess.Popen(command)
 
     def land(self):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'land_client1']
+        command = ['ros2', 'run', 'drone_package', f'land_client{self.drone_id}']
         subprocess.run(command)
 
 
