@@ -96,7 +96,7 @@ class Drone_node1(Node):
 
         self.vehicle.mode = VehicleMode("GUIDED")
 
-    def goto(self, x, y, z, speed=10):
+    def goto(self, x, y, z, speed=1):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
 
