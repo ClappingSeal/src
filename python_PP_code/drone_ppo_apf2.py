@@ -12,7 +12,7 @@ class PositionSubscriber(Node):
     def __init__(self, goal_x, goal_y):
         super().__init__('position_subscriber')
         self.drone_id = 2  # Set the drone ID here
-        self.force_magnitude = 1
+        self.force_magnitude = 5
         self.height = 6
         self.limit = 3
         self.goal_threshold = 1
