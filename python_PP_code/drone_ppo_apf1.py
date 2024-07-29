@@ -11,9 +11,9 @@ from stable_baselines3 import PPO, TD3
 class PositionSubscriber(Node):
     def __init__(self, goal_x, goal_y):
         super().__init__('position_subscriber')
-        self.drone_id = 2  # Set the drone ID here
+        self.drone_id = 1  # Set the drone ID here
         self.force_magnitude = 1
-        self.height = 6
+        self.height = 4
         self.limit = 3
         self.goal_threshold = 1
         self.model = PPO.load("ppo_robot.zip")
@@ -104,13 +104,13 @@ class PositionSubscriber(Node):
     def goto_client(self, x, y):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'goto_client1', str(x), str(y), str(self.height)]
+        command = ['ros2', 'run', 'drone_package', f'goto_client{self.id}', str(x), str(y), str(self.height)]
         self.current_process = subprocess.Popen(command)
 
     def land(self):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'land_client1']
+        command = ['ros2', 'run', 'drone_package', f'land_client{self.id}']
         subprocess.run(command)
 
 
