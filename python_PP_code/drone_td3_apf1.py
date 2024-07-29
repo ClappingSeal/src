@@ -11,9 +11,9 @@ from stable_baselines3 import PPO, TD3
 class PositionSubscriber(Node):
     def __init__(self, goal_x, goal_y):
         super().__init__('position_subscriber')
-        self.drone_id = 2  # Set the drone ID here
+        self.drone_id = 1  # Set the drone ID here
         self.force_magnitude = 1
-        self.height = 6
+        self.height = 4
         self.limit = 3
         self.goal_threshold = 1
         self.model = TD3.load("td3_robot.zip")
@@ -32,7 +32,7 @@ class PositionSubscriber(Node):
         self.obstacles_copy = None
         self.obstacles_radius = None
 
-        self.create_timer(0.5, self.apf_td3)
+        self.create_timer(0.5, self.apf_ppo)
 
     def get_ab(self, pos, obstacles, goal):
         env = APFEnv(pos)
@@ -70,7 +70,7 @@ class PositionSubscriber(Node):
             drone_data = [[drone_position[0], drone_position[1]], self.obstacles, self.goal]
             print(drone_data)
 
-    def apf_td3(self):
+    def apf_ppo(self):
         drone_position = self.positions.get('drone_position', None)
         if drone_position:
             self.obstacles_copy = [point[:] for point in self.obstacles]
@@ -104,13 +104,13 @@ class PositionSubscriber(Node):
     def goto_client(self, x, y):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'goto_client1', str(x), str(y), str(self.height)]
+        command = ['ros2', 'run', 'drone_package', f'goto_client{self.id}', str(x), str(y), str(self.height)]
         self.current_process = subprocess.Popen(command)
 
     def land(self):
         if self.current_process is not None:
             self.current_process.terminate()
-        command = ['ros2', 'run', 'drone_package', 'land_client1']
+        command = ['ros2', 'run', 'drone_package', f'land_client{self.id}']
         subprocess.run(command)
 
 
