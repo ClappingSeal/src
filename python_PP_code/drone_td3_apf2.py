@@ -16,7 +16,7 @@ class PositionSubscriber(Node):
         self.height = 6
         self.limit = 3
         self.goal_threshold = 1
-        self.timer = 2.0
+        self.timer = 0.5
         self.model = TD3.load("td3_robot.zip")
 
         self.subscription = self.create_subscription(
