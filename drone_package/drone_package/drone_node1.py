@@ -134,6 +134,16 @@ class DroneNode1(Node):
             response.message = str(e)
         return response
 
+    def land_callback(self, request, response):
+        try:
+            self.land()
+            response.success = True
+            response.message = "Vehicle has landed successfully"
+        except Exception as e:
+            response.success = False
+            response.message = str(e)
+        return response
+
     def goal_callback(self, goal_handle):
         self.get_logger().info('Received goal request')
         return GoalResponse.ACCEPT
