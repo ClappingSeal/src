@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
-from msgs.action import MOVE as GOTO
+from msgs.act import GOTO
 
 class GotoClient1(Node):
 
