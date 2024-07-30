@@ -106,14 +106,14 @@ class PositionSubscriber(Node):
         if self.current_process is not None:
             self.current_process.terminate()
             self.current_process.wait() 
-        command = ['ros2', 'run', 'drone_package', f'goto_client{self.id}', str(x), str(y), str(self.height)]
+        command = ['ros2', 'run', 'drone_package', f'goto_client{self.drone_id}', str(x), str(y), str(self.height)]
         self.current_process = subprocess.Popen(command)
 
     def land(self):
         if self.current_process is not None:
             self.current_process.terminate()
             self.current_process.wait() 
-        command = ['ros2', 'run', 'drone_package', f'land_client{self.id}']
+        command = ['ros2', 'run', 'drone_package', f'land_client{self.drone_id}']
         subprocess.run(command)
 
 
