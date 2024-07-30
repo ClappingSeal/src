@@ -23,8 +23,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GOTO.srv"
   "srv/STATE.srv"
   "msg/POS.msg"
+  
   "act/GOTO.action"
-  DEPENDENCIES unique_identifier_msgs
+  DEPENDENCIES unique_identifier_msgs builtin_interfaces
 )
 
 if(BUILD_TESTING)
