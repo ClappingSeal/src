@@ -12,11 +12,11 @@ class PositionSubscriber(Node):
     def __init__(self, goal_x, goal_y):
         super().__init__('position_subscriber')
         self.drone_id = 1  # Set the drone ID here
-        self.force_magnitude = 2.5
+        self.force_magnitude = 3
         self.height = 4
         self.limit = 3
         self.goal_threshold = 1
-        self.timer = 0.5
+        self.timer = 1.5
         self.model = TD3.load("td3_robot.zip")
 
         self.subscription = self.create_subscription(
