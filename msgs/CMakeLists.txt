@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
+find_package(unique_identifier_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
