@@ -34,7 +34,7 @@ class Drone_node1(Node):
         self._action_server = ActionServer(
             self,
             GOTO,
-            'goto',
+            'goto1',
             self.execute_callback,
             goal_callback=self.goal_callback,
             cancel_callback=self.cancel_callback)
