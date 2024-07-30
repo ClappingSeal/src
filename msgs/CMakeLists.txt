@@ -17,13 +17,12 @@ find_package(unique_identifier_msgs REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/POS.msg"
   "srv/ARM.srv"
   "srv/TAKEOFF.srv"
   "srv/LAND.srv"
   "srv/GOTO.srv"
   "srv/STATE.srv"
-  "msg/POS.msg"
-  
   "act/GOTO.action"
   DEPENDENCIES unique_identifier_msgs builtin_interfaces
 )
