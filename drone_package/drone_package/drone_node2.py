@@ -39,7 +39,7 @@ class DroneNode2(Node):
             cancel_callback=self.cancel_callback)
 
         # Connect to vehicle
-        self.vehicle = connect('/dev/ttyACM1', wait_ready=True, baud=115200, timeout=60)  # Use a different connection string if needed
+        self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
 
         # Timer for publishing position
         timer_period = 0.1  # seconds
