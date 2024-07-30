@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GOTO.srv"
   "srv/STATE.srv"
   "msg/POS.msg"
+  "act/GOTO.action"
 )
 
 if(BUILD_TESTING)
