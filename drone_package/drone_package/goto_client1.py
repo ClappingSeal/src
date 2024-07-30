@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
-from msgs.srv import GOTO
+from rclpy.action import ActionClient
+from msgs.action import GOTO
 
 class Goto_client1(Node):
 
