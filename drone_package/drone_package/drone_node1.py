@@ -10,7 +10,7 @@ import logging
 from msgs.msg import POS
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 from msgs.srv import ARM, TAKEOFF, LAND
-from msgs.action import GOTO
+from msgs.action import MOVE as GOTO
 
 logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 
