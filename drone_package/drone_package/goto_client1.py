@@ -3,7 +3,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from msgs.action import GOTO
 
-class GotoClient(Node):
+class GotoClient1(Node):
 
     def __init__(self):
         super().__init__('goto_client1')
@@ -45,19 +45,19 @@ def main(args=None):
     args_without_ros = rclpy.utilities.remove_ros_args(args)
 
     if len(args_without_ros) != 4:
-        print("Usage: ros2 run arm_pos_package goto_client <x> <y> <z>")
+        print("Usage: ros2 run arm_pos_package goto_client1 <x> <y> <z>")
         return
 
     x = float(args_without_ros[1])
     y = float(args_without_ros[2])
     z = float(args_without_ros[3])
 
-    goto_client = GotoClient()
-    goto_client.send_goal(x, y, z)
+    goto_client1 = GotoClient1()
+    goto_client1.send_goal(x, y, z)
 
-    rclpy.spin(goto_client)
+    rclpy.spin(goto_client1)
 
-    goto_client.destroy_node()
+    goto_client1.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
