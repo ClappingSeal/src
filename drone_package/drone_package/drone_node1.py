@@ -25,14 +25,23 @@ class Drone_node1(Node):
         # Service for landing
         self.land_service = self.create_service(LAND, 'land1', self.land_callback)
 
-        # Service for moving 1
-        self.goto_service = self.create_service(GOTO, 'goto1', self.goto_callback)
-        # self.goto_service = self.create_service(GOTO, 'goto1', self.goto_block_callback)
-
         # Publisher for position
         qos_profile = QoSProfile(depth=10)
         qos_profile.reliability = QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE
         self.publisher = self.create_publisher(POS, 'position_topic1', qos_profile)
+        
+        # Action server for moving
+        self._action_server = ActionServer(
+            self,
+            Goto,
+            'goto',
+            self.execute_callback,
+            goal_callback=self.goal_callback,
+            cancel_callback=self.cancel_callback)
+        
+        # Service for moving 1
+        # self.goto_service = self.create_service(GOTO, 'goto1', self.goto_callback)
+        # self.goto_service = self.create_service(GOTO, 'goto1', self.goto_block_callback)
 
         # Connect to vehicle
         self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
@@ -183,15 +192,22 @@ class Drone_node1(Node):
             response.message = str(e)
         return response
 
-    def goto_callback(self, request, response):
-        try:
-            self.goto(request.x, request.y, request.z)
-            response.success = True
-            response.message = f"Vehicle is moving to position ({request.x}, {request.y}, {request.z})"
-        except Exception as e:
-            response.success = False
-            response.message = str(e)
-        return response
+    def goal_callback(self, goal_handle):
+        self.get_logger().info('Received goal request')
+        return GoalResponse.ACCEPT
+
+    def cancel_callback(self, goal_handle):
+        self.get_logger().info('Received cancel request')
+        return CancelResponse.ACCEPT
+
+    def execute_callback(self, goal_handle):
+        feedback_msg = Goto.Feedback()
+        self.goto(goal_handle.request.x, goal_handle.request.y, goal_handle.request.z)
+        goal_handle.succeed()
+        result = Goto.Result()
+        result.success = True
+        result.message = f"Vehicle moved to position ({goal_handle.request.x}, {goal_handle.request.y}, {goal_handle.request.z})"
+        return result
 
     def goto_block_callback(self, request, response):
         try:
