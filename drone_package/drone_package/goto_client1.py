@@ -6,7 +6,7 @@ from msgs.action import GOTO
 class GotoClient(Node):
 
     def __init__(self):
-        super().__init__('goto_client')
+        super().__init__('goto_client1')
         self._action_client = ActionClient(self, GOTO, 'goto1')
 
     def send_goal(self, x, y, z):
