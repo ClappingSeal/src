@@ -1,38 +1,43 @@
 import rclpy
 from rclpy.node import Node
-from msgs.srv import GOTO
+from rclpy.action import ActionClient
+from msgs.action import MOVE
 
-class Goto_client2(Node):
+class GotoClient2(Node):
 
     def __init__(self):
         super().__init__('goto_client2')
-        self.cli = self.create_client(GOTO, 'goto2')
-        self.current_future = None
-        while not self.cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('service not available, waiting again...')
-            
-    def cancel_current_request(self):
-        if self.current_future:
-            self.current_future.cancel()
-            self.current_future = None
-            self.get_logger().info('Cancelled the current request.')
+        self._action_client = ActionClient(self, MOVE, 'move2')
 
-    def send_request(self, x, y, z):
-        self.cancel_current_request()  # 기존 경로 취소
+    def send_goal(self, x, y, z):
+        goal_msg = MOVE.Goal()
+        goal_msg.x = x
+        goal_msg.y = y
+        goal_msg.z = z
 
-        request = GOTO.Request()
-        request.x = x
-        request.y = y
-        request.z = z
-        self.current_future = self.cli.call_async(request)
+        self._action_client.wait_for_server()
 
-    def check_futures(self):
-        if self.current_future and self.current_future.done():
-            if self.current_future.result() is not None:
-                self.get_logger().info(f'Result: {self.current_future.result().message}')
-            else:
-                self.get_logger().error('Service call failed')
-            self.current_future = None
+        self._send_goal_future = self._action_client.send_goal_async(
+            goal_msg,
+            feedback_callback=self.feedback_callback)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected')
+            return
+
+        self.get_logger().info('Goal accepted')
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future):
+        result = future.result().result
+        self.get_logger().info(f'Result: {result.message}')
+
+    def feedback_callback(self, feedback_msg):
+        self.get_logger().info(f'Feedback: {feedback_msg.feedback}')
 
 def main(args=None):
     rclpy.init(args=args)
@@ -40,21 +45,19 @@ def main(args=None):
     args_without_ros = rclpy.utilities.remove_ros_args(args)
 
     if len(args_without_ros) != 4:
-        print("Usage: ros2 run arm_pos_package goto_client <x> <y> <z>")
+        print("Usage: ros2 run arm_pos_package goto_client2 <x> <y> <z>")
         return
 
     x = float(args_without_ros[1])
     y = float(args_without_ros[2])
     z = float(args_without_ros[3])
 
-    goto2 = Goto_client2()
-    goto2.send_request(x, y, z)
+    goto_client2 = GotoClient2()
+    goto_client2.send_goal(x, y, z)
 
-    while rclpy.ok():
-        goto2.check_futures()
-        rclpy.spin_once(goto2, timeout_sec=0.1)
+    rclpy.spin(goto_client2)
 
-    goto2.destroy_node()
+    goto_client2.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
