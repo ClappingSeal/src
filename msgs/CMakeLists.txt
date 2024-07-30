@@ -23,7 +23,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LAND.srv"
   "srv/GOTO.srv"
   "srv/STATE.srv"
-  "act/GOTO.action"
+  
   DEPENDENCIES unique_identifier_msgs builtin_interfaces
 )
 
