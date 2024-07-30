@@ -104,7 +104,7 @@ class DroneNode1(Node):
 
         if self.vehicle.mode != VehicleMode("GUIDED"):
             self.vehicle.mode = VehicleMode("GUIDED")
-            time.sleep(0.1)
+            time.sleep(0.01)
 
         target_location = LocationGlobalRelative(target_lat, target_lon, target_alt)
 
