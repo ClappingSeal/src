@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from dronekit import connect, VehicleMode, APIException, LocationGlobalRelative, Command
 from pymavlink import mavutil
 import time
@@ -8,7 +9,8 @@ import logging
 
 from msgs.msg import POS
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
-from msgs.srv import ARM, TAKEOFF, LAND, GOTO
+from msgs.srv import ARM, TAKEOFF, LAND
+from msgs.action import GOTO
 
 logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 
