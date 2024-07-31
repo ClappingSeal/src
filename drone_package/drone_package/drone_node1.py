@@ -12,21 +12,21 @@ from msgs.srv import ARM, TAKEOFF, LAND, GOTO
 logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 
 
-class Drone_node2(Node):
+class Drone_node1(Node):
     def __init__(self):
-        super().__init__('drone_node2')
+        super().__init__('drone_node1')
 
         # Node
-        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff2', self.takeoff_callback)
-        self.land_service = self.create_service(LAND, 'land2', self.land_callback)
-        self.goto_service = self.create_service(GOTO, 'goto2', self.goto_callback)
+        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff1', self.takeoff_callback)
+        self.land_service = self.create_service(LAND, 'land1', self.land_callback)
+        self.goto_service = self.create_service(GOTO, 'goto1', self.goto_callback)
         qos_profile = QoSProfile(depth=10)
         qos_profile.reliability = QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE
-        self.publisher = self.create_publisher(POS, 'position_topic2', qos_profile)
+        self.publisher = self.create_publisher(POS, 'position_topic1', qos_profile)
         timer_period = 0.1  # seconds
         self.timer = self.create_timer(timer_period, self.publish_position)
         self.position = POS()
-        self.drone_num = 2
+        self.drone_num = 1
 
         # Vehicle
         self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
@@ -188,12 +188,12 @@ class Drone_node2(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    drone2 = Drone_node2()
+    drone1 = Drone_node1()
     try:
-        rclpy.spin(drone2)
+        rclpy.spin(drone1)
     finally:
-        drone2.close_connection()
-        drone2.destroy_node()
+        drone1.close_connection()
+        drone1.destroy_node()
         rclpy.shutdown()
 
 
