@@ -12,21 +12,21 @@ from msgs.srv import ARM, TAKEOFF, LAND, GOTO
 logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 
 
-class Drone_node1(Node):
+class Drone_node2(Node):
     def __init__(self):
-        super().__init__('drone_node1')
+        super().__init__('drone_node2')
 
         # Node
-        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff1', self.takeoff_callback)
-        self.land_service = self.create_service(LAND, 'land1', self.land_callback)
-        self.goto_service = self.create_service(GOTO, 'goto1', self.goto_callback)
+        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff2', self.takeoff_callback)
+        self.land_service = self.create_service(LAND, 'land2', self.land_callback)
+        self.goto_service = self.create_service(GOTO, 'goto2', self.goto_callback)
         qos_profile = QoSProfile(depth=10)
         qos_profile.reliability = QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE
-        self.publisher = self.create_publisher(POS, 'position_topic1', qos_profile)
-        timer_period = 0.1
+        self.publisher = self.create_publisher(POS, 'position_topic2', qos_profile)
+        timer_period = 0.1  # seconds
         self.timer = self.create_timer(timer_period, self.publish_position)
         self.position = POS()
-        self.drone_num = 1
+        self.drone_num = 2
 
         # Vehicle
         self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
@@ -87,7 +87,6 @@ class Drone_node1(Node):
     def goto_block(self, x, y, z):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
-        print(self.init_lat, y, LONGITUDE_CONVERSION)
         target_lat = self.base_lat + (x / LATITUDE_CONVERSION)
         target_lon = self.base_lon - (y / LONGITUDE_CONVERSION)
         target_alt = z
@@ -155,7 +154,7 @@ class Drone_node1(Node):
         try:
             self.goto_block(request.x, request.y, request.z)
             response.success = True
-            response.message = f"Vehicle is moving to position ({request.x}, {request.y}, {request.z})"
+            response.message = f"Vehicle has moved to position ({request.x}, {request.y}, {request.z})"
         except Exception as e:
             response.success = False
             response.message = str(e)
@@ -189,12 +188,12 @@ class Drone_node1(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    drone1 = Drone_node1()
+    drone2 = Drone_node2()
     try:
-        rclpy.spin(drone1)
+        rclpy.spin(drone2)
     finally:
-        drone1.close_connection()
-        drone1.destroy_node()
+        drone2.close_connection()
+        drone2.destroy_node()
         rclpy.shutdown()
 
 
