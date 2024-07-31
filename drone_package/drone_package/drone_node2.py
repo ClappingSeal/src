@@ -10,39 +10,28 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 from msgs.srv import ARM, TAKEOFF, LAND, GOTO
 logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 
+
 class Drone_node2(Node):
     def __init__(self):
         super().__init__('drone_node2')
-        # Service for takeoff
-        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff2', self.takeoff_callback)
-        # Service for landing
-        self.land_service = self.create_service(LAND, 'land2', self.land_callback)
-        # Service for moving 1
-        self.goto_service = self.create_service(GOTO, 'goto2', self.goto_callback)
-        # self.goto_service = self.create_service(GOTO, 'goto2', self.goto_block_callback)
-        # Publisher for position
-        qos_profile = QoSProfile(depth=10)
-        qos_profile.reliability = QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE
-        self.publisher = self.create_publisher(POS, 'position_topic2', qos_profile)
-        # Connect to vehicle
+        # Vehicle
         self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
-        # Timer for publishing position
-        timer_period = 0.1  # seconds
-        self.timer = self.create_timer(timer_period, self.publish_position)
-        # Position message
-        self.position = POS()
-        self.drone_num = 2
         self.init_lat = self.vehicle.location.global_relative_frame.lat
         self.init_lon = self.vehicle.location.global_relative_frame.lon
         self.base_lat = 35.2266470
         self.base_lon = 126.8405244
-        # # Check position
-        # if self.init_lat is None or self.init_lon is None:
-        #     raise ValueError("Latitude or Longitude value is None. Class initialization aborted.")
-        # print("Drone current location : ", self.init_lat, "lat, ", self.init_lon, "lon")
-        
-        # if self.init_lat == 0 or self.init_lon == 0:
-        #     raise ValueError("Cannot get Location. Class initialization aborted.")
+
+        # Node
+        self.takeoff_service = self.create_service(TAKEOFF, 'takeoff2', self.takeoff_callback)
+        self.land_service = self.create_service(LAND, 'land2', self.land_callback)
+        self.goto_service = self.create_service(GOTO, 'goto2', self.goto_callback)
+        qos_profile = QoSProfile(depth=10)
+        qos_profile.reliability = QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE
+        self.publisher = self.create_publisher(POS, 'position_topic2', qos_profile)
+        timer_period = 0.1  # seconds
+        self.timer = self.create_timer(timer_period, self.publish_position)
+        self.position = POS()
+        self.drone_num = 2
     
     def takeoff(self, h):
         self.vehicle.mode = VehicleMode("STABILIZE")
