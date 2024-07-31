@@ -15,6 +15,12 @@ logging.getLogger('dronekit').setLevel(logging.CRITICAL)
 class Drone_node1(Node):
     def __init__(self):
         super().__init__('drone_node1')
+        # Vehicle
+        self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
+        self.init_lat = self.vehicle.location.global_relative_frame.lat
+        self.init_lon = self.vehicle.location.global_relative_frame.lon
+        self.base_lat = 35.2266470
+        self.base_lon = 126.8405244
 
         # Node
         self.takeoff_service = self.create_service(TAKEOFF, 'takeoff1', self.takeoff_callback)
@@ -27,13 +33,6 @@ class Drone_node1(Node):
         self.timer = self.create_timer(timer_period, self.publish_position)
         self.position = POS()
         self.drone_num = 1
-
-        # Vehicle
-        self.vehicle = connect('/dev/ttyACM0', wait_ready=True, baud=115200, timeout=60)
-        self.init_lat = self.vehicle.location.global_relative_frame.lat
-        self.init_lon = self.vehicle.location.global_relative_frame.lon
-        self.base_lat = 35.2266470
-        self.base_lon = 126.8405244
 
     def takeoff(self, h):
         self.vehicle.mode = VehicleMode("STABILIZE")
