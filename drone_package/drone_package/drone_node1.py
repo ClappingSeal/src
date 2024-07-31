@@ -78,7 +78,6 @@ class Drone_node1(Node):
         self.vehicle.mode = VehicleMode("GUIDED")
 
     def goto(self, x, y, z, speed=10):
-    def goto(self, x, y, z, speed=1):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
 
@@ -92,6 +91,7 @@ class Drone_node1(Node):
         self.vehicle.groundspeed = speed
         self.vehicle.simple_goto(target_location)
         # print(f"Moving to: Lat: {target_lat}, Lon: {target_lon}, Alt: {target_alt} at {speed} m/s")
+    
     def goto_block(self, x, y, z):
         LATITUDE_CONVERSION = 111000
         LONGITUDE_CONVERSION = 88.649 * 1000
@@ -124,6 +124,7 @@ class Drone_node1(Node):
                 print("Arrived at target location!!!!!!!!!!!!!!!!!!!!!")
                 break
             time.sleep(0.5)
+            
     def land(self):
         print("Initiating landing sequence")
         self.vehicle._master.mav.command_long_send(
@@ -134,6 +135,7 @@ class Drone_node1(Node):
             print(f"Altitude: {self.vehicle.location.global_relative_frame.alt}")
             time.sleep(1)
         print("Landed successfully!!!!!!!!!!!!!!!!!!!!")
+        
     def takeoff_callback(self, request, response):
         try:
             h = request.altitude
@@ -153,6 +155,7 @@ class Drone_node1(Node):
             response.success = False
             response.message = str(e)
         return response
+        
     def goto_block_callback(self, request, response):
         try:
             self.goto_block(request.x, request.y, request.z)
@@ -162,6 +165,7 @@ class Drone_node1(Node):
             response.success = False
             response.message = str(e)
         return response
+        
     def land_callback(self, request, response):
         try:
             self.land()
@@ -171,6 +175,7 @@ class Drone_node1(Node):
             response.success = False
             response.message = str(e)
         return response
+        
     def publish_position(self):
         location = self.vehicle.location.global_relative_frame
         num = self.drone_num
@@ -179,11 +184,13 @@ class Drone_node1(Node):
         self.position.y = location.lon
         self.position.z = location.alt
         self.publisher.publish(self.position)
+        
     def close_connection(self):
         if self.vehicle:
             self.vehicle.close()
             self.vehicle = None
             print("Vehicle connection closed.")
+            
 def main(args=None):
     rclpy.init(args=args)
     drone1 = Drone_node1()
@@ -193,5 +200,6 @@ def main(args=None):
         drone1.close_connection()
         drone1.destroy_node()
         rclpy.shutdown()
+        
 if __name__ == '__main__':
     main()
