@@ -16,7 +16,7 @@ class APFEnv:
         return goal_vector / norm * att_gain
 
     # state, apf
-    def rep_force(self, obs_info, rep_gain=2):
+    def rep_force(self, obs_info, rep_gain=1):
         force = np.zeros(2)
 
         for obs in obs_info:
@@ -37,7 +37,6 @@ class APFEnv:
                 force += repulsive_force_magnitude * repulsive_force_direction
 
         return force
-
 
     # state
     def heuristic(self, goal):
@@ -104,11 +103,11 @@ class APFEnv:
         return rot_rev_att_vector, rot_rev_rep_vector, rot_rev_closest_obs_pos
 
     # func, action
-    def apf_inverse_rotate(self, goal, b_vector):
+    def apf_inverse_rotate(self, goal, obs, b_vector):
         goal = np.array(goal)
-        heuristic = self.heuristic(goal)
+        apf_vector = self.apf(goal, obs)
 
-        angle = np.pi / 2 - np.arctan2(heuristic[1], heuristic[0])
+        angle = np.pi / 2 - np.arctan2(apf_vector[1], apf_vector[0])
         rotation_matrix = np.array([
             [np.cos(angle), -np.sin(angle)],
             [np.sin(angle), np.cos(angle)]
