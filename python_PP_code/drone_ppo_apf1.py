@@ -37,9 +37,8 @@ class PositionSubscriber(Node):
 
         self.create_timer(self.timer, self.apf_ppo)
 
-    def get_ab(self, pos, obstacles, goal):
+    def get_ab(model, pos, obstacles, goal):
         env = APFEnv(pos)
-
         get_state = env.apf_rev_rotate(goal, obstacles)
         state = np.concatenate((
             get_state[0],
@@ -47,12 +46,14 @@ class PositionSubscriber(Node):
             get_state[2],
             np.array([np.linalg.norm(env.heuristic(goal))])
         ))
-
-        action, _states = self.model.predict(state, deterministic=True)
+        action, _states = model.predict(state, deterministic=True)
         a = action[0]
         b = [action[1], action[2]]
-        b = env.apf_inverse_rotate(goal, b) / 2
-
+        if np.linalg.norm(b) > 0.8:
+            b = b / np.linalg.norm(b)
+    
+        b = env.apf_inverse_rotate(goal, obstacles, b)
+    
         return a, b
 
     def listener_callback(self, msg):
