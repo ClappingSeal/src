@@ -104,6 +104,7 @@ class PositionSubscriber(Node):
             if len(point) == 2:
                 point.append(self.limit)
         return points
+        
     def goto_client(self, x, y):
         if self.current_process is not None:
             self.current_process.terminate()
