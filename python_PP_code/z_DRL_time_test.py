@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from stable_baselines3 import PPO, TD3
-from APF_Settings import APFEnv
+from apf_code import APFEnv
 
 def get_ab(model, pos, obstacles, goal):
     env = APFEnv(pos)
